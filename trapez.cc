@@ -19,7 +19,7 @@ public:
 
 class Pol3 {
 public:
-  double operator()(double x) { return x*x*x*x; }
+  double operator()(double x) { return sin(1/x)/x; }
 };
 
 class Gauss {
@@ -35,9 +35,13 @@ template<class Functor> std::vector<double> trapez(Functor f,double a, double b,
   for (int k = 1; k <= N; ++k) {
     int n = pow(2, k);
     double d = 0;
-    for (int j = 1; j < n ; j += 2 ) {d += f(a + j * h/n);}
-    I[k] = I[k-1] / 2 + h/n * d ; // setze k-ten Wert im Feld
-  }
+    for (int j = 1; j < n ; j += 2 ) {
+      d += f(a + j * h/n);
+      //std ::cout << d << "  " << k  << "   " << a+j*h/n   << std::endl;
+      }
+    I[k] = I[k-1] / 2 + h/n * d ;
+    //std ::cout << I[k]<< std::endl; // setze k-ten Wert im Feld
+  };
   return I;
 }
 
@@ -58,13 +62,12 @@ std::vector<std::vector<double>> romberg(std::vector<double> I) {
     for(int k = 0 ; k < N-j ; ++k) {
       double extr = R[k+1][j] + (R[k+1][j] - R[k][j])/(pow(2,2*(j+1))-1); 
       R[k].push_back(extr); 
+      //std::cout << extr << std::endl;
     }
   } 
 
-
   return R;
 }
-
 
 void testeAufgabe1() {
   Pol1 f;
@@ -139,22 +142,20 @@ int main() {
   
   testeAufgabe1();
   testeAufgabe2();
-  
 
-
+  std::cout << R[0][R[0].size()-1] << std::endl;
   
-   tr << "Trapez:" << std::endl
+   tr << "Trapez und Richardson-Extrapolation:" << std::endl
     << std::setw(14) << "f(x)" << " ||"
     << std::setw(10) << "I0(f)" << " |"
     << std::setw(10) << "I1(f)" << " |"
     << std::setw(10) << "I2(f)" << " |"
-    << std::setw(10) << "I3(f)" << " |"  //Bitte in Firefox öffnen
-    << std::setw(10) << "I1-I0" << " |" 
-    << std::setw(10) << "I2-I1" << " |" 
-    << std::setw(10) << "I3-I2" << " |" 
-    << std::setw(10) << "Int0_3_f" << " |" 
+    << std::setw(10) << "I3(f)" << " |"
+    << std::setw(10) << "I1-I0" << " |"
+    << std::setw(10) << "I2-I1" << " |"
+    << std::setw(10) << "I3-I2" << " |"
+    << std::setw(10) << "Int0_3_f" << " |"
     << "\n---------------||-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|";
-
   
   Pol1 f; 
   tr << "\n" << std::setw(14) << "3x + 2" << " ||";
@@ -166,7 +167,6 @@ int main() {
   tr << std::setw(10) << "-1.5"  << " |" << "\n" << std::setw(14) << "Gauss" << " ||";
   Tabelle(h);
   tr << std::setw(10) << "0.498650"  << " |";
-
   
   tr.close();
 }
